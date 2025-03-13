@@ -4,7 +4,8 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            ImageConverter ic = new();
+            ic.SaveBmpImage("s2_spatial_anomoly.jxr", "new_bmp_image.bmp");
         }
     }
 }
