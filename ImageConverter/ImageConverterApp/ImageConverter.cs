@@ -127,6 +127,45 @@ namespace ImageConverterApp
             Console.WriteLine("Conversion completed successfully!");
         }
 
+        public static void ConvertJxrImage(string inputPath, string outputPath, ImageFormat targetFormat, float gammaCorrection = 0)
+        {
+            ImagingFactory factory = new();
+
+            // Open the .jxr image using WIC
+            using (var decoder = new BitmapDecoder(factory, imageFolderPath + inputPath, DecodeOptions.CacheOnDemand))
+            using (var frame = decoder.GetFrame(0))
+            using (var converter = new FormatConverter(factory))
+            {
+                // Disable automatic color management
+                converter.Initialize(frame, SharpDX.WIC.PixelFormat.Format32bppPBGRA,
+                    BitmapDitherType.None, null, 0.0, BitmapPaletteType.Custom);
+
+
+                // Create a standard 8-bit PNG
+                using (var bitmap = new System.Drawing.Bitmap(converter.Size.Width, converter.Size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                {
+                    var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                        ImageLockMode.WriteOnly, bitmap.PixelFormat);
+                    converter.CopyPixels(data.Stride, data.Scan0, data.Height * data.Stride);
+                    bitmap.UnlockBits(data);
+
+                    if (gammaCorrection != 0)
+                    {
+                        // Apply gamma correction to the image
+                        var adjustedBitmap = ApplyGammaCorrection(bitmap, gammaCorrection);
+                        adjustedBitmap.Save(imageFolderPath + outputPath, targetFormat);
+                    }
+                    else
+                    {
+                        bitmap.Save(imageFolderPath + outputPath, targetFormat);
+                    }
+                }
+            }
+
+            Console.WriteLine("Conversion completed successfully!");
+        }
+
+        // ChatGPT provided method
         private static System.Drawing.Bitmap ApplyGammaCorrection(System.Drawing.Bitmap original, float gamma)
         {
             System.Drawing.Bitmap adjustedBitmap = new(original.Width, original.Height);
