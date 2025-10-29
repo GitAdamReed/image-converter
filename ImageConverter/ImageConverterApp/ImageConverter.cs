@@ -13,19 +13,19 @@ namespace ImageConverterApp
 {
     public static class ImageConverter
     {
-        private static readonly string imageFolderPath = "C:\\Users\\adamr\\Documents\\GitHub\\image-converter\\ImageConverter\\ImageConverterApp\\Images\\";
+        private static readonly string _imageFolderPath = "C:\\Users\\adamr\\Documents\\GitHub\\image-converter\\ImageConverter\\ImageConverterApp\\Images\\";
 
         public static string? ImageFolderPath
         {
             get
             {
-                return imageFolderPath;
+                return _imageFolderPath;
             }
         }
 
         private static byte[] GetImageBytes(string imagePath)
         {
-            using (FileStream image = File.Open(imageFolderPath + imagePath, FileMode.Open))
+            using (FileStream image = File.Open(_imageFolderPath + imagePath, FileMode.Open))
             {
                 byte[] buffer = new byte[image.Length];
                 image.Read(buffer, 0, (Int32)image.Length);
@@ -35,10 +35,10 @@ namespace ImageConverterApp
 
         public static void ConvertImage(string currImagePath, string newImagePath)
         {
-            using (FileStream fileToConvert = File.Open(imageFolderPath + currImagePath, FileMode.Open))
+            using (FileStream fileToConvert = File.Open(_imageFolderPath + currImagePath, FileMode.Open))
             {
                 Console.WriteLine($"Image size of {fileToConvert}: {fileToConvert.Length}");
-                using (FileStream newFile = File.Create(imageFolderPath + newImagePath))
+                using (FileStream newFile = File.Create(_imageFolderPath + newImagePath))
                 {
                     fileToConvert.CopyTo(newFile);
                     Console.WriteLine($"Image size of {newFile}: {newFile.Length}");
@@ -51,7 +51,7 @@ namespace ImageConverterApp
         {
             var wic = WICImagingFactory.Create();
 
-            using var fileStream = File.Open(imageFolderPath + currImagePath, FileMode.Open, FileAccess.ReadWrite);
+            using var fileStream = File.Open(_imageFolderPath + currImagePath, FileMode.Open, FileAccess.ReadWrite);
 
             var decoder = wic.CreateDecoderFromStream(fileStream.AsCOMStream(), WICDecodeOptions.WICDecodeMetadataCacheOnDemand/*lossless decoding/encoding*/);
 
@@ -85,7 +85,7 @@ namespace ImageConverterApp
             //fileStream.Position = 0;
             //fileStream.SetLength(0);
 
-            using (FileStream targetFileStream = File.Create(imageFolderPath + newImagePath))
+            using (FileStream targetFileStream = File.Create(_imageFolderPath + newImagePath))
             {
                 memoryStream.CopyTo(targetFileStream);
             }
@@ -100,7 +100,7 @@ namespace ImageConverterApp
             ImagingFactory factory = new();
 
             // Open the .jxr image using WIC
-            using (var decoder = new BitmapDecoder(factory, imageFolderPath + inputPath, DecodeOptions.CacheOnDemand))
+            using (var decoder = new BitmapDecoder(factory, _imageFolderPath + inputPath, DecodeOptions.CacheOnDemand))
             using (var frame = decoder.GetFrame(0))
             using (var converter = new FormatConverter(factory))
             {
@@ -120,7 +120,7 @@ namespace ImageConverterApp
                     // Apply gamma correction to the image to make it a bit darker
                     var adjustedBitmap = ApplyGammaCorrection(bitmap, 2.2f);
 
-                    adjustedBitmap.Save(imageFolderPath + outputPath, ImageFormat.Png);
+                    adjustedBitmap.Save(_imageFolderPath + outputPath, ImageFormat.Png);
                 }
             }
 
@@ -132,7 +132,7 @@ namespace ImageConverterApp
             ImagingFactory factory = new();
 
             // Open the .jxr image using WIC
-            using (var decoder = new BitmapDecoder(factory, imageFolderPath + inputPath, DecodeOptions.CacheOnDemand))
+            using (var decoder = new BitmapDecoder(factory, _imageFolderPath + inputPath, DecodeOptions.CacheOnDemand))
             using (var frame = decoder.GetFrame(0))
             using (var converter = new FormatConverter(factory))
             {
@@ -153,11 +153,11 @@ namespace ImageConverterApp
                     {
                         // Apply gamma correction to the image
                         var adjustedBitmap = ApplyGammaCorrection(bitmap, gammaCorrection);
-                        adjustedBitmap.Save(imageFolderPath + outputPath, targetFormat);
+                        adjustedBitmap.Save(_imageFolderPath + outputPath, targetFormat);
                     }
                     else
                     {
-                        bitmap.Save(imageFolderPath + outputPath, targetFormat);
+                        bitmap.Save(_imageFolderPath + outputPath, targetFormat);
                     }
                 }
             }
