@@ -165,6 +165,25 @@ namespace ImageConverterApp
             Console.WriteLine("Conversion completed successfully!");
         }
 
+        public static void ConvertJxrImageRecursive(string inputFolderPath, string outputFolderPath, ImageFormat targetFormat, float gammaCorrection = 0)
+        {
+            string[] filesToConvert = Directory.GetFiles(inputFolderPath, "*.jxr");
+            foreach (var file in filesToConvert)
+            {
+                var fileName = file.Split("\\").LastOrDefault();
+                Console.WriteLine($"Converting {fileName}...");
+                try
+                {
+                    ConvertJxrImage($"test_dir\\{fileName}", $"{fileName.Split(".").First()}.png", targetFormat, gammaCorrection);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed to convert image {fileName}");
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+
         // ChatGPT provided method
         private static System.Drawing.Bitmap ApplyGammaCorrection(System.Drawing.Bitmap original, float gamma)
         {
